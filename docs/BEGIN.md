@@ -86,3 +86,19 @@ Imagine you’re building an AI-powered **customer support assistant**:
 - **Workflow:** “Detect → Summarize → Search → Draft → Send.”
 
 ---
+
+### Before you send a Prompt:
+
+- Is the CONTEXT relevant?
+
+- Is the task CLEARLY defined?
+
+- Am I using the RIGHT MODEL?
+
+- Should it be a NEW CHAT?
+
+- Have I defined the expected output?
+
+- Am I sharing any SECRETS?
+
+### This affects the Cost!
