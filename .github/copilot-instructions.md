@@ -1,50 +1,32 @@
-# CleanArch — ASP.NET Core Minimal API (.NET 9)
+# Sheee — repo guidance for AI coding agents
 
-Four-project clean architecture solution. Read this file before searching the codebase; it
-already describes the layout and conventions, so avoid re-exploring for basic facts.
+This repository is a small ASP.NET Core app centered on [MyApiApp/Program.cs](../MyApiApp/Program.cs). Keep changes minimal and aligned with the existing minimal-API style unless the task explicitly calls for a larger structure.
 
-## Layout & dependency rule
+## Project shape
 
-| Project | References | Contents |
-| --- | --- | --- |
-| `src/CleanArch.Domain` | none | `Entities/Product.cs` — invariants enforced in ctor/methods |
-| `src/CleanArch.Application` | Domain | `Abstractions/IProductRepository.cs` (port), `Products/ProductModels.cs` (DTOs), `Products/ProductService.cs` |
-| `src/CleanArch.Infrastructure` | Application | `Persistence/InMemoryProductRepository.cs` (`internal` adapter) |
-| `src/CleanArch.Web` | Application, Infrastructure | `Program.cs` composition root, `Endpoints/ProductEndpoints.cs` |
+- Main application: [MyApiApp/](../MyApiApp)
+- Startup and endpoint registration: [MyApiApp/Program.cs](../MyApiApp/Program.cs)
+- Runtime target and package metadata: [MyApiApp/MyApiApp.csproj](../MyApiApp/MyApiApp.csproj)
+- Project context and notes: [docs/BEGIN.md](../docs/BEGIN.md)
 
-Dependencies point inward only. Never reference Infrastructure from Application/Domain, and
-never reference Web from anywhere. Each layer registers itself via a `DependencyInjection.cs`
-`Add{Layer}()` extension called from `Program.cs`.
+## Working conventions
 
-## Conventions
-
-- `net9.0`, `Nullable` + `ImplicitUsings` enabled. No `using` directives needed for common BCL namespaces.
-- Types are `sealed`; DTOs are `record`s; services use primary-constructor injection.
-- Endpoints: `MapGroup` + `TypedResults` with `Results<T1,T2>` unions (no `[ProducesResponseType]` attributes).
-- Every async method takes a `CancellationToken` and flows it through to the repository.
-- Input shape validation lives in the endpoint; business invariants live in the domain entity.
-- Errors surface as RFC 9457 via `AddProblemDetails()` + `UseExceptionHandler()`.
-- 4-space indent, allman braces, braces always on `if` blocks.
-
-## Where to put new code
-
-- New entity/business rule → Domain.
-- New use case, DTO, or port interface → Application.
-- New persistence/external adapter → Infrastructure, registered in its `DependencyInjection.cs`.
-- New HTTP route → a `{Feature}Endpoints.cs` static class in `Web/Endpoints`, mapped in `Program.cs`.
+- Prefer a minimal API approach over introducing controllers, layers, or new abstractions unless the task clearly needs them.
+- Keep endpoint logic small and readable; do not over-engineer feature setup for this repo.
+- Preserve the .NET target framework and package versions unless a task explicitly requires a planned update.
+- When adding endpoints, keep the existing ASP.NET Core minimal-API patterns and use the built-in `TypedResults`/`Results<T1,T2>` style when appropriate.
+- Prefer the smallest change that solves the task and validate it with a build before finishing.
 
 ## Commands
 
 ```powershell
-dotnet build CleanArch.sln
-dotnet run --project src/CleanArch.Web
+dotnet build
+dotnet run --project MyApiApp/MyApiApp.csproj
 ```
 
-OpenAPI (Development only): `/openapi/v1.json`.
+## Guardrails
 
-## Gotchas
-
-- There is no test project yet; validate changes with `dotnet build`.
-- Persistence is in-memory and registered as a singleton — state resets on restart.
-- Do not run `dotnet add package Microsoft.EntityFrameworkCore*` without pinning a `9.0.*`
-  version; the default resolve picks 10.0.x, which is incompatible with `net9.0`.
+- Do not add large frameworks or redesign the app structure without a clear requirement.
+- Do not make unrelated package-version or framework upgrades.
+- Keep changes scoped to the feature or fix being requested.
+- Prefer existing patterns in the app over introducing new conventions.
