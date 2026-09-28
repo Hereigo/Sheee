@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "echo 'Files changed — run: dotnet build && dotnet format --verify-no-changes'",
+        "windows": "powershell -NoProfile -Command \"Write-Host 'Files changed - run: dotnet build; dotnet format'\"",
+        "timeout": 10
+      }
+    ]
+  }
+}
